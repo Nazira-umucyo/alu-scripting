@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Fetch and print titles of first 10 hot posts from a subreddit."""
+"""Fetch and print titles of first 10 hot posts from a subreddit"""
 
 import requests
 
@@ -10,7 +10,7 @@ def top_ten(subreddit):
     If the subreddit is invalid, prints None.
     """
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
-    headers = {"User-Agent": "python:alx.api:v1.0 (by /u/fakeuser)"}
+    headers = {"User-Agent": "PostmanRuntime/7.35.0"}
 
     try:
         response = requests.get(url, headers=headers, allow_redirects=False)
@@ -18,14 +18,13 @@ def top_ten(subreddit):
             print(None)
             return
 
-        data = response.json().get("data", {}).get("children", [])
-
-        if not data:
+        posts = response.json().get("data", {}).get("children", [])
+        if not posts:
             print(None)
             return
 
-        for post in data:
-            print(post["data"]["title"])
+        for post in posts:
+            print(post["data"].get("title"))
 
     except Exception:
         print(None)
