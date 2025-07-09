@@ -9,26 +9,24 @@ import requests
 def top_ten(subreddit):
     """
     Prints the titles of the first 10 hot posts for a given subreddit.
-    Prints None if the subreddit is invalid.
+    If the subreddit is invalid or has no posts, do nothing.
     """
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {
-        "User-Agent": "MyRedditClient/1.0"
-    }
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
+    headers = {"User-Agent": "MyRedditClient/1.0"}
     params = {"limit": 10}
 
-    response = requests.get(
-        url, headers=headers, params=params, allow_redirects=False)
+    try:
+        response = requests.get(
+            url, headers=headers, params=params, allow_redirects=False)
+        if response.status_code != 200:
+            return
 
-    if response.status_code != 200:
-        print("None")
+        data = response.json().get("data", {}).get("children", [])
+        if not data:
+            return
+
+        for post in data:
+            print(post["data"]["title"])
+
+    except Exception:
         return
-
-    posts = response.json().get("data", {}).get("children", [])
-
-    if not posts:
-        print("None")
-        return
-
-    for post in posts:
-        print(post.get("data", {}).get("title"))
