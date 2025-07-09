@@ -12,20 +12,42 @@ def top_ten(subreddit):
     Prints the titles of the first 10 hot posts for a subreddit.
     If the subreddit is invalid, prints None.
     """
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {"User-Agent": "MyRedditApp/0.1"}
-    params = {"limit": 10}
-
-    response = requests.get(
-        url, headers=headers, params=params, allow_redirects=False)
-
-    if response.status_code != 200:
-        print("None")
+    if not subreddit or not isinstance(subreddit, str):
+        print(None)
         return
-
+    
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    headers = {"User-Agent": "python:reddit.api.advanced:v1.0.0 (by /u/student)"}
+    params = {"limit": 10}
+    
     try:
-        data = response.json().get("data", {}).get("children", [])
-        for post in data:
-            print(post.get("data", {}).get("title"))
-    except Exception:
-        print("None")
+        response = requests.get(
+            url, headers=headers, params=params, allow_redirects=False)
+        
+        if response.status_code != 200:
+            print(None)
+            return
+        
+        data = response.json()
+        
+        # Check if we got valid subreddit data
+        if not data or 'data' not in data or 'children' not in data['data']:
+            print(None)
+            return
+            
+        posts = data['data']['children']
+        
+        # If no posts found, it might be an invalid subreddit
+        if not posts:
+            print(None)
+            return
+            
+        # Print titles of first 10 posts
+        for post in posts[:10]:
+            if 'data' in post and 'title' in post['data']:
+                title = post['data']['title']
+                if title:  # Make sure title is not empty
+                    print(title)
+                    
+    except (requests.exceptions.RequestException, ValueError, KeyError):
+        print(None)
