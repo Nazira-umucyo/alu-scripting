@@ -1,25 +1,12 @@
 #!/usr/bin/python3
-"""Module that fetches and prints titles of the first 10 hot posts from a subreddit."""
+"""
+1-main
+"""
+import sys
 
-import requests
-
-
-def top_ten(subreddit):
-    """
-    Queries the Reddit API and prints the titles of the first 10 hot posts.
-    If the subreddit is invalid or empty, prints None.
-    """
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
-    headers = {"User-Agent": "PostmanRuntime/7.35.0"}
-
-    try:
-        response = requests.get(url, headers=headers, allow_redirects=False)
-        if response.status_code != 200:
-            print(None)
-            return
-
-        posts = response.json().get("data", {}).get("children", [])
-        for post in posts:
-            print(post["data"].get("title"))
-    except Exception:
-        print(None)
+if __name__ == '__main__':
+    top_ten = __import__('1-top_ten').top_ten
+    if len(sys.argv) < 2:
+        print("Please pass an argument for the subreddit to search.")
+    else:
+        top_ten(sys.argv[1])
