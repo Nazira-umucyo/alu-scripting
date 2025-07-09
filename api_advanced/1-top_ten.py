@@ -9,7 +9,7 @@ import requests
 
 def top_ten(subreddit):
     """Print the titles of the first 10 hot posts for subreddit."""
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
     headers = {"User-Agent": "python:alx:0.1 (by /u/yourusername)"}
     params = {"limit": 10}
 
@@ -19,14 +19,14 @@ def top_ten(subreddit):
                                 allow_redirects=False,
                                 timeout=10)
         if response.status_code != 200:
-            # Invalid subreddit: do not print anything
-            return
+            return  # Prints nothing on invalid subreddit
 
         data = response.json()
         posts = data.get("data", {}).get("children", [])
-        for post in posts:
-            print(post.get("data", {}).get("title"))
-
+        for i, post in enumerate(posts):
+            title = post.get("data", {}).get("title")
+            if title:
+                # Print each title without extra newlines
+                print(title)
     except Exception:
-        # Do nothing on exception as well (silent failure)
-        pass
+        return  # Silent fail, no output
