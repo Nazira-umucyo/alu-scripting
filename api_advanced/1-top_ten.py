@@ -1,25 +1,34 @@
 #!/usr/bin/python3
-"""Fetch and print the titles of the first 10 hot posts from a subreddit."""
+"""Fetches and prints the first 10 hot posts of a given subreddit."""
 
 import requests
 
 
 def top_ten(subreddit):
     """
-    Queries the Reddit API and prints the titles of the first 10 hot posts.
-    If subreddit is invalid or inaccessible, prints None.
+    Queries the Reddit API and prints titles of the first 10 hot posts.
+    Prints None if subreddit is invalid.
     """
-    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
-    headers = {"User-Agent": "CustomUserAgent/1.0"}
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; RedditScraper/1.0; +https://www.example.com/bot)"
+    }
+    params = {"limit": 10}
 
     try:
-        response = requests.get(url, headers=headers, allow_redirects=False)
+        response = requests.get(url, headers=headers,
+                                params=params, allow_redirects=False)
+
         if response.status_code != 200:
             print("None")
             return
 
-        posts = response.json().get("data", {}).get("children", [])
-        for post in posts:
-            print(post["data"]["title"])
+        data = response.json().get("data", {}).get("children", [])
+        if not data:
+            print("None")
+            return
+
+        for post in data:
+            print(post.get("data", {}).get("title"))
     except Exception:
         print("None")
